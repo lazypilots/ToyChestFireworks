@@ -1,0 +1,9 @@
+Android Immersive Mode:
+
+Version 1.0:
+
+Getting started:
+
+1. Place the "androidimmersivemode.jar" file in "Assets/Plugins/Android/" folder.
+2. In your "FIRST" scene drag and drop the "AndroidImmersiveMode" Prefab into the scene.
+3. Thats it! The navigation bar should hide automatically in game.
