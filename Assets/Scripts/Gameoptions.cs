@@ -7,6 +7,7 @@ using System.Collections;
  *  0 = Free Play, fireworks as desired
  *  1 = Color Ident, 
  *  2 = Cinema
+ *  3 = Counting
  */ 
 
 public class Gameoptions{
@@ -36,7 +37,7 @@ public class Gameoptions{
 	public static void IncrementTypeGame()
 	{
 		TypeGame++;
-		if (TypeGame > 2)
+		if (TypeGame > 3)
 			TypeGame = 0;
 	}
 

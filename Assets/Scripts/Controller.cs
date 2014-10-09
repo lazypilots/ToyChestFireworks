@@ -31,21 +31,29 @@ public class Controller : MonoBehaviour {
 	public GameObject button;
 	public Button[] _buttons = new Button[6];
 	public int _color;
+	public int countTarget, countCurrent;
+	public int [] _countList;
 	private float _lockTimer;
 	private EDU_GAMESTATES _gameState;
 	private float _gameStateTimer;
 	public float _correctBurstTimer;
 	private bool _stateStart;          //Set to true for the first frame of a given state//
 	private float _burstRandomTimer;
+	public float MaxTimer;
+	public int _burstSize;
+	public int _burstCounter;
+	public bool _bInBurst;
+	public float _burstTimer;
+	public float _burstDelay;
 
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
-		_timer = 2.0f;
+		_timer = 0.0f;
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
 		Gameoptions.Start();
-
+		_countList = new int [6];
 		_lockTimer = 0;
 		_gameStateTimer = 0;
 		_gameState = EDU_GAMESTATES.STARTUP;
@@ -55,7 +63,9 @@ public class Controller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		_timer -= Time.deltaTime;
+		_timer += Time.deltaTime;
+
+	
 
 		int i = 0;
 		if (Gameoptions.TypeGame == 0)
@@ -74,28 +84,54 @@ public class Controller : MonoBehaviour {
 		}
 		}
 
+		if (Gameoptions.TypeGame == 2) {
+			if(_timer >= MaxTimer)
+			{
+				_bInBurst = true;
+				_burstSize = Random.Range (1, 6);
+				_timer = (Random.Range(10, (MaxTimer * 10)) / 10.0f) - 1;
+				
+			}
+			
+			if (_bInBurst)
+			{
+				_burstTimer += Time.deltaTime;
+				
+				
+				
+				if (_burstTimer >= _burstDelay)
+				{
+					//new firework//
+					Firework script1 = (Firework)fireWork.GetComponent("Firework");
+					script1.color = GetColor();
+					Vector3 pos1 = new Vector3(Random.Range(0, 45)/5 - 4 , Random.Range(0, 30)/5 - 1 , 0);
+					Instantiate(fireWork, pos1, Quaternion.identity);
+					
+					_burstCounter ++;
+					_burstTimer = 0;
+					_burstDelay = ((float)Random.Range(0,20.0f)) / 20.0f;
+				}
+				
+				if (_burstCounter == _burstSize)
+				{
+					_burstCounter = 0;
+					_bInBurst = false;
+				}
+			}
+
+
+				}
+
 		if ( Gameoptions.TypeGame == 1)
 		{
 			UpdateEduGameLogic();
 		}
 
-		/*
-		if (Gameoptions.TypeGame == 1)
+		if ( Gameoptions.TypeGame == 3)
 		{
-			foreach (Button ob in _buttons)
-			{
-				if (ob.b_Active)
-				{
-					if (ob._color == _color)
-					{
-						_timer = 0;
-					}
-					ob.b_Active = false;
-				}
-			}
-
+			UpdateCountGameLogic();
 		}
-*/
+		
 
 		if ( Input.GetKey(KeyCode.Escape) == true)
 		{
@@ -120,6 +156,105 @@ public class Controller : MonoBehaviour {
 		{
 			_lockTimer = 0;
 		}
+
+
+	}
+	//Having two game type updates is totally unnecesary, but I wrote the original code so long ago
+	//I forget how it works to modify it for counting game.
+	void UpdateCountGameLogic()
+	{
+		_gameStateTimer += Time.deltaTime;
+
+		switch (_gameState) {
+		case EDU_GAMESTATES.STARTUP:
+			_gameStateTimer = 0;
+			_gameState = EDU_GAMESTATES.PROMPT;
+			_stateStart = true;
+			break;
+		case EDU_GAMESTATES.PROMPT:
+			//Audio for Color guess CUE//
+			
+			if(_gameStateTimer > 3.0)
+			{
+				_gameStateTimer = 0;
+				_gameState = EDU_GAMESTATES.DISPLAY;
+				_stateStart = true;
+			}
+			break;
+		case EDU_GAMESTATES.DISPLAY:
+			if (_stateStart)
+			{
+				//Firework script1 = (Firework)fireWork.GetComponent("Firework");
+				//script1.color = GetColor();
+				_gameStateTimer = 3.0f;
+				countCurrent = 0;
+				_stateStart = false;
+				countTarget = Random.Range(1,9);
+
+			}	
+			if (_gameStateTimer > 2.5){
+				Firework script1 = (Firework)fireWork.GetComponent("Firework");
+				script1.color = GetColor();
+				Vector3 pos1 = new Vector3(Random.Range(0, 45)/5 - 4 , Random.Range(0, 30)/5 - 1 , 0);
+				Instantiate(fireWork, pos1, Quaternion.identity);
+				countCurrent++;
+				_gameStateTimer = Random.Range(0, 1.0f);
+			}
+
+			if (countCurrent == countTarget)
+			{
+				_gameState = EDU_GAMESTATES.WAIT;
+				_stateStart = true;
+				GenerateCountList();
+			}
+
+			break;
+
+		case EDU_GAMESTATES.WAIT:
+
+			break;
+			//If no correct state set to startup//
+
+		case EDU_GAMESTATES.CORRECT:
+			//audio correct prompt play//
+			if (_stateStart)
+			{
+				_correctBurstTimer = 0;
+				SetRandomTimer(0.70f);
+				_stateStart = false;
+			}
+			_correctBurstTimer += Time.deltaTime;
+			
+			if (_correctBurstTimer >= _burstRandomTimer)
+			{
+				Firework script2 = (Firework)fireWork.GetComponent("Firework");
+				script2.color = GetColor();
+				Vector3 pos2 = new Vector3(Random.Range(0, 45)/5 - 4 , Random.Range(0, 30)/5 - 1 , 0);
+				Instantiate(fireWork, pos2, Quaternion.identity);
+				
+				_correctBurstTimer = 0;
+				SetRandomTimer(0.70f);
+			}
+			
+			if (_gameStateTimer > 3.0)
+				_gameState = EDU_GAMESTATES.CLEANUP;
+			break;
+		case EDU_GAMESTATES.INCORRECT:
+			//audio incorrect prompt play//
+			
+			if (_gameStateTimer > 3.0)
+				_gameState = EDU_GAMESTATES.CLEANUP;
+			break;
+		case EDU_GAMESTATES.CLEANUP:
+			
+			_gameState = EDU_GAMESTATES.STARTUP;
+			break;
+
+
+		default:
+			_gameState = EDU_GAMESTATES.STARTUP;
+			break;
+		};
 
 
 	}
@@ -279,7 +414,99 @@ public class Controller : MonoBehaviour {
 			}
 		}
 
+		if (Gameoptions.TypeGame == 3)
+		{
+			for (int i = 0; i < _countList.Length; i++)
+			{
+				if(_gameState != EDU_GAMESTATES.WAIT)
+				{
+					GUI.enabled = false;
+				}
+				if(GUI.Button(new Rect((GUIScale.virtualWidth / _countList.Length) * i ,
+				                       GUIScale.virtualHeight *0.85f, 
+				                       (GUIScale.virtualWidth / _countList.Length),
+				                       GUIScale.virtualHeight *0.15f ), 
+				              GetArrayString(i)) &&_gameState == EDU_GAMESTATES.WAIT  ) {
+					if (_countList[i] == countTarget)
+					{
+						_gameState = EDU_GAMESTATES.CORRECT;
+						_gameStateTimer = 0;
+						_stateStart = true;
+					}
+					else
+					{
+						_gameState = EDU_GAMESTATES.INCORRECT;
+						_gameStateTimer = 0;
+						_stateStart = true;
+					}
+				}
+			}
+			
+			GUI.enabled = true;
+			
+			if (_gameState == EDU_GAMESTATES.PROMPT)
+			{
+				GUI.skin.box.fontSize = 72;
+				GUI.Box(new Rect(GUIScale.virtualWidth * 0.2f,GUIScale.virtualHeight * 0.3f ,GUIScale.virtualWidth * 0.6f,86), "Count the Fireworks!");
+			}
+			else if (_gameState == EDU_GAMESTATES.CORRECT)
+			{
+				GUI.skin.box.fontSize = 72;
+				GUI.Box(new Rect(GUIScale.virtualWidth * 0.2f,GUIScale.virtualHeight * 0.3f ,GUIScale.virtualWidth * 0.6f,86), "Thats Right!");
+			}
+			else if (_gameState == EDU_GAMESTATES.INCORRECT)
+			{
+				GUI.skin.box.fontSize = 72;
+				GUI.Box(new Rect(GUIScale.virtualWidth * 0.2f,GUIScale.virtualHeight * 0.3f ,GUIScale.virtualWidth * 0.6f,86), "Not Quite!");
+			}
+		}
 
+	}
+
+	private string GetArrayString(int i)
+	{
+		string s;
+		if (_gameState == EDU_GAMESTATES.WAIT) 
+		{
+			switch (_countList[i])
+			{
+			case 1:
+				return ("One\n(1)");
+				break;
+			case 2:
+				return ("Two\n(2)");
+				break;
+			case 3:
+				return ("Three\n(3)");
+				break;
+			case 4:
+				return ("Four\n(4)");
+				break;
+			case 5:
+				return ("Five\n(5)");
+				break;
+			case 6:
+				return ("Six\n(6)");
+			break;			
+			case 7:
+				return ("Seven\n(7)");
+				break;
+			case 8:
+				return ("Eight\n(8)");
+				break;
+			case 9:
+				return ("Nine\n(9)");
+				break;
+			default:
+				return (" ");
+				break;
+			};
+		} 
+
+		else 
+		{
+						return (" ");
+		}
 	}
 
 	public void SetRandomTimer(float i)
@@ -353,5 +580,36 @@ public class Controller : MonoBehaviour {
 		};
 	}
 
+	public void GenerateCountList()
+	{
+		_countList [0] = countTarget;
+		for (int i = 1; i < 6; i++) 
+		{
+			int k = 0;
+			bool b_uniq = true;
+			while(b_uniq)
+			{
+				k = Random.Range(1, 9);
+				b_uniq = false;
+				for (int j = 0; j < i; j++)
+				{
 
+				if (k == _countList[j])
+					{
+						b_uniq = true;
+					}
+					Debug.Log( k + " equals " + _countList[j] + " is " + b_uniq);
+				}
+			}
+			_countList[i] = k;
+		}
+
+		for (int i = _countList.Length; i>0; i--) 
+		{
+			int r = Random.Range(0, i);
+			int l = _countList[r];
+			_countList[r] = _countList[i - 1];
+			_countList[i - 1] = l;
+		}
+	}
 }

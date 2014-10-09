@@ -30,7 +30,7 @@ public class Startup : MonoBehaviour {
 		
 		// Make the first button. If it is pressed, Application.Loadlevel (1) will be executed
 		if(GUI.Button(new Rect(GUIScale.virtualWidth*.20f,GUIScale.virtualHeight*.30f,GUIScale.virtualWidth*.60f,GUIScale.virtualHeight*.10f), "Start")) {
-			Application.LoadLevel(1);
+			Application.LoadLevel(3);
 		}
 		
 		// Make the second button.
