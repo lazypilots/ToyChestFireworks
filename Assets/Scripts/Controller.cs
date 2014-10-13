@@ -45,6 +45,7 @@ public class Controller : MonoBehaviour {
 	public bool _bInBurst;
 	public float _burstTimer;
 	public float _burstDelay;
+	public AudioAnnouncer a_audio;
 
 	// Use this for initialization
 	void Start () {
@@ -173,6 +174,7 @@ public class Controller : MonoBehaviour {
 			break;
 		case EDU_GAMESTATES.PROMPT:
 			//Audio for Color guess CUE//
+
 			
 			if(_gameStateTimer > 3.0)
 			{
@@ -217,6 +219,8 @@ public class Controller : MonoBehaviour {
 
 		case EDU_GAMESTATES.CORRECT:
 			//audio correct prompt play//
+			a_audio.Correct();
+
 			if (_stateStart)
 			{
 				_correctBurstTimer = 0;
@@ -272,6 +276,7 @@ public class Controller : MonoBehaviour {
 			break;
 		case EDU_GAMESTATES.PROMPT:
 			//Audio for Color guess CUE//
+
 
 			if(_gameStateTimer > 3.0)
 			{
@@ -465,41 +470,41 @@ public class Controller : MonoBehaviour {
 
 	private string GetArrayString(int i)
 	{
-		string s;
+
 		if (_gameState == EDU_GAMESTATES.WAIT) 
 		{
 			switch (_countList[i])
 			{
 			case 1:
 				return ("One\n(1)");
-				break;
+				//break;
 			case 2:
 				return ("Two\n(2)");
-				break;
+				//break;
 			case 3:
 				return ("Three\n(3)");
-				break;
+				//break;
 			case 4:
 				return ("Four\n(4)");
-				break;
+				//break;
 			case 5:
 				return ("Five\n(5)");
-				break;
+				//break;
 			case 6:
 				return ("Six\n(6)");
-			break;			
+			//break;			
 			case 7:
 				return ("Seven\n(7)");
-				break;
+				//break;
 			case 8:
 				return ("Eight\n(8)");
-				break;
+				//break;
 			case 9:
 				return ("Nine\n(9)");
-				break;
+				//break;
 			default:
 				return (" ");
-				break;
+				//break;
 			};
 		} 
 

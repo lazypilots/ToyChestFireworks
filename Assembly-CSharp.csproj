@@ -50,6 +50,7 @@
      <Compile Include="Assets\AdMobPlugin\Scripts\AdMobPluginDebug.cs" />
      <Compile Include="Assets\AdMobPlugin\Scripts\AdMobPluginMockup.cs" />
      <Compile Include="Assets\AndroidImmersiveMode\Scripts\ImmersiveModeEnabler.cs" />
+     <Compile Include="Assets\Scripts\AudioAnnouncer.cs" />
      <Compile Include="Assets\Scripts\Button.cs" />
      <Compile Include="Assets\Scripts\ChildLock.cs" />
      <Compile Include="Assets\Scripts\Controller.cs" />
@@ -61,6 +62,7 @@
      <Compile Include="Assets\Scripts\MenuFireworks.cs" />
      <Compile Include="Assets\Scripts\OptionsMenu.cs" />
      <Compile Include="Assets\Scripts\Particle.cs" />
+     <Compile Include="Assets\Scripts\SavWav.cs" />
      <Compile Include="Assets\Scripts\Startup.cs" />
      <None Include="Assets\AdMobPlugin\LICENSE.txt" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />

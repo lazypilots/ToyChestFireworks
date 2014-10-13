@@ -5,6 +5,8 @@ public class OptionsMenu : MonoBehaviour {
 
 	private string _typeText, _repeatText, _colorsText, _lockText, _detailText;
 
+	public AudioClip testAudioClip;
+
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
@@ -50,16 +52,20 @@ public class OptionsMenu : MonoBehaviour {
 
 
 	
-		if(GUI.Button(new Rect(GUIScale.virtualWidth*.08f,GUIScale.virtualHeight*.20f,GUIScale.virtualWidth*.37f,GUIScale.virtualHeight*.10f), _typeText)) {
-			Gameoptions.IncrementTypeGame();
+		if(GUI.Button(new Rect(GUIScale.virtualWidth*.08f,GUIScale.virtualHeight*.20f,GUIScale.virtualWidth*.37f,GUIScale.virtualHeight*.10f), "Test")) {
+			testAudioClip = Microphone.Start ( null, false, 4, 44100 );
 		}
 
-		if(GUI.Button(new Rect(GUIScale.virtualWidth*.55f,GUIScale.virtualHeight*.20f,GUIScale.virtualWidth*.37f,GUIScale.virtualHeight*.10f), _repeatText)) {
-			Gameoptions.IncrementRepeat();
+		if(GUI.Button(new Rect(GUIScale.virtualWidth*.55f,GUIScale.virtualHeight*.20f,GUIScale.virtualWidth*.37f,GUIScale.virtualHeight*.10f), "Save")) {
+
+
+			SavWav.Save("myfile", testAudioClip);
 		}
 
-		if(GUI.Button(new Rect(GUIScale.virtualWidth*.08f,GUIScale.virtualHeight*.40f,GUIScale.virtualWidth*.37f,GUIScale.virtualHeight*.10f), _colorsText)) {
-			Gameoptions.IncrementNumColors();
+
+		if(GUI.Button(new Rect(GUIScale.virtualWidth*.08f,GUIScale.virtualHeight*.40f,GUIScale.virtualWidth*.37f,GUIScale.virtualHeight*.10f), "Play")) {
+			this.audio.clip = testAudioClip;
+			audio.Play();
 		}
 
 		if(GUI.Button(new Rect(GUIScale.virtualWidth*.55f,GUIScale.virtualHeight*.40f,GUIScale.virtualWidth*.37f,GUIScale.virtualHeight*.10f), _lockText)) {

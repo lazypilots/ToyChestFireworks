@@ -17,6 +17,8 @@ public class Gameoptions{
 	public static int ParentalLock;
 	public static int FireworkDetail;
 
+
+
 	public static void Start()
 	{
 		if (!LoadOptions())
